@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triangular Trade Route — Uwa</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: hsl(20, 14%, 4%); font-family: Georgia, serif; }
+  #map { width: 100%; height: calc(100vh - 80px); }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 16px; }
+  .legend span { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
+  .legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .caption { font-size: 11px; color: hsl(40,20%,55%); font-style: italic; text-align: center; padding: 8px 16px; }
+  .bottle-marker { background: none !important; border: none !important; filter: drop-shadow(0 0 6px rgba(200,134,10,0.6)); }
+  .dark-popup .leaflet-popup-content-wrapper { background: hsl(20,14%,8%); color: #ddd; border: 1px solid hsl(30,10%,18%); border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+  .dark-popup .leaflet-popup-tip { background: hsl(20,14%,8%); border: 1px solid hsl(30,10%,18%); }
+  .dark-popup .leaflet-popup-close-button { color: #999; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="legend">
+  <span><span class="dot" style="background:#8b3a3a"></span> Triangular trade route</span>
+  <span><span class="dot" style="background:#c8860a"></span> Anatsui / Museum sites</span>
+  <span><span class="dot" style="background:#7a6f5f"></span> Exhibition venues</span>
+  <span>
+    <svg width="16" height="16" viewBox="0 0 36 36"><rect x="14" y="6" width="8" height="16" rx="2" fill="#c8860a" opacity="0.9"/><rect x="15.5" y="2" width="5" height="5" rx="1" fill="#c8860a" opacity="0.9"/><rect x="15" y="0.5" width="6" height="2.5" rx="1" fill="#8b3a3a"/></svg>
+    The spinning bottle
+  </span>
+</div>
+<p class="caption">The triangular trade route: European liquor to West Africa, enslaved people to the Americas, rum and sugar back to Europe — an endless cycle of extraction encoded in every bottle cap Anatsui collects.</p>
+<script>
+var triangleVertices = [
+  { name: "West Africa", coords: [6.8567, 7.3951], desc: "European manufactured goods — especially liquor — were traded here for enslaved people. Today, the same trade networks flood West Africa with cheap alcohol, the bottle caps of which Anatsui collects.", legLabel: "Enslaved people →" },
+  { name: "Caribbean / Americas", coords: [18.1096, -77.2975], desc: "Enslaved Africans were forced to work sugarcane plantations, producing rum and raw sugar. The bottle of rum begins its destructive cycle here.", legLabel: "Rum & sugar →" },
+  { name: "Liverpool / Europe", coords: [53.4084, -2.9916], desc: "European ports received raw materials from enslaved labor. The profits funded more manufactured goods — including liquor — to be shipped back to Africa, completing the cycle.", legLabel: "Manufactured goods & liquor →" }
+];
+var otherLocations = [
+  { name: "Nsukka, Nigeria", coords: [6.8567, 7.3951], desc: "El Anatsui's studio. Bottle caps from local distilleries are collected, flattened, and stitched into art.", type: "origin" },
+  { name: "Stanford, California", coords: [37.4275, -122.1697], desc: "Cantor Arts Center. Uwa entered the permanent collection in 2017.", type: "museum" },
+  { name: "New York City", coords: [40.7128, -74.006], desc: "Jack Shainman Gallery — Uwa debuted in 'Pot of Wisdom' (Dec 2012).", type: "exhibition" },
+  { name: "London, England", coords: [51.5074, -0.1278], desc: "October Gallery (2002) and Tate Modern ('Behind the Red Moon,' 2023).", type: "exhibition" }
+];
+var colorMap = { origin: "#c8860a", museum: "#c8860a", exhibition: "#7a6f5f" };
+
+function bottleSvg(r) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" style="transform:rotate('+r+'deg)"><g transform="translate(18,18)"><rect x="-4" y="-12" width="8" height="16" rx="2" fill="#c8860a" opacity="0.9"/><rect x="-2.5" y="-16" width="5" height="5" rx="1" fill="#c8860a" opacity="0.9"/><rect x="-3" y="-17.5" width="6" height="2.5" rx="1" fill="#8b3a3a"/><rect x="-1.5" y="-10" width="2" height="10" rx="1" fill="rgba(255,255,255,0.25)"/></g></svg>';
+}
+function interp(a, b, t) { return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t]; }
+function angDeg(a, b) { return Math.atan2(b[1]-a[1], b[0]-a[0])*180/Math.PI; }
+
+var map = L.map('map', { center: [25,-20], zoom: 2.5, minZoom: 2, maxZoom: 8, zoomControl: true, scrollWheelZoom: false });
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd' }).addTo(map);
+
+var triCoords = triangleVertices.map(function(v){return v.coords;});
+var closed = triCoords.concat([triCoords[0]]);
+L.polyline(closed, { color: "#8b3a3a", weight: 2, opacity: 0.6, dashArray: "8,10" }).addTo(map);
+var glow = L.polyline(closed, { color: "#8b3a3a", weight: 6, opacity: 0.15 }).addTo(map);
+if (glow.getElement()) glow.getElement().style.filter = "blur(3px)";
+
+triangleVertices.forEach(function(v, i) {
+  var m = L.circleMarker(v.coords, { radius: 9, fillColor: "#8b3a3a", color: "#c8860a", weight: 2, opacity: 0.9, fillOpacity: 0.8 }).addTo(map);
+  var ni = (i+1) % triangleVertices.length;
+  m.bindPopup('<div style="font-family:serif;max-width:220px;"><h3 style="margin:0 0 6px;font-size:14px;color:#c8860a;">'+v.name+'</h3><p style="margin:0 0 8px;font-size:12px;line-height:1.5;color:#ddd;">'+v.desc+'</p><p style="margin:0;font-size:11px;color:#8b3a3a;font-style:italic;">'+v.legLabel+' '+triangleVertices[ni].name+'</p></div>', {className:'dark-popup'});
+});
+otherLocations.forEach(function(loc) {
+  var c = colorMap[loc.type] || "#c8860a";
+  var m = L.circleMarker(loc.coords, { radius: 6, fillColor: c, color: c, weight: 1, opacity: 0.7, fillOpacity: 0.5 }).addTo(map);
+  m.bindPopup('<div style="font-family:serif;max-width:200px;"><h3 style="margin:0 0 4px;font-size:13px;color:#c8860a;">'+loc.name+'</h3><p style="margin:0;font-size:11px;line-height:1.4;color:#ddd;">'+loc.desc+'</p></div>', {className:'dark-popup'});
+});
+
+var legs = [[triCoords[0],triCoords[1]], [triCoords[1],triCoords[2]], [triCoords[2],triCoords[0]]];
+var legDist = legs.map(function(l){ var d0=l[1][0]-l[0][0], d1=l[1][1]-l[0][1]; return Math.sqrt(d0*d0+d1*d1); });
+var totalDist = legDist.reduce(function(s,d){return s+d;},0);
+var bottleIcon = L.divIcon({ className:'bottle-marker', html: bottleSvg(0), iconSize:[36,36], iconAnchor:[18,18] });
+var bottleMarker = L.marker(triCoords[0], { icon: bottleIcon, zIndexOffset: 1000 }).addTo(map);
+var trailLine = L.polyline([], { color: "#c8860a", weight: 2.5, opacity: 0.7 }).addTo(map);
+
+var CYCLE=12000, PAUSE=800, TOTAL=CYCLE+PAUSE*3, start=performance.now();
+function animate(now) {
+  var el = (now-start) % TOTAL, tm=el, pc=0;
+  for (var i=0;i<3;i++) {
+    var le = CYCLE*legDist.slice(0,i+1).reduce(function(s,d){return s+d;},0)/totalDist;
+    var ps = le + i*PAUSE;
+    if (el>ps && el<=ps+PAUSE) {
+      bottleMarker.setLatLng(legs[i][1]);
+      bottleMarker.setIcon(L.divIcon({className:'bottle-marker',html:bottleSvg(angDeg(legs[i][0],legs[i][1])),iconSize:[36,36],iconAnchor:[18,18]}));
+      requestAnimationFrame(animate); return;
+    }
+    if (el>le+i*PAUSE) pc=i+1;
+  }
+  tm=el-pc*PAUSE;
+  var prog=Math.min(tm/CYCLE,1), dt=prog*totalDist, cum=0, li=0;
+  for (var i=0;i<legDist.length;i++) { if(cum+legDist[i]>=dt){li=i;break;} cum+=legDist[i]; }
+  var lp=(dt-cum)/legDist[li], pos=interp(legs[li][0],legs[li][1],lp), ang=angDeg(legs[li][0],legs[li][1]);
+  bottleMarker.setLatLng(pos);
+  bottleMarker.setIcon(L.divIcon({className:'bottle-marker',html:bottleSvg(ang),iconSize:[36,36],iconAnchor:[18,18]}));
+  var tp=[]; for(var i=0;i<li;i++) tp.push(legs[i][0]); tp.push(legs[li][0]); tp.push(pos);
+  trailLine.setLatLngs(tp);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>

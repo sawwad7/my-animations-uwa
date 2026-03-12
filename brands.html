@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bottle Cap Brands — Uwa</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; font-family: 'Georgia', serif; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 900px; margin: 0 auto; padding: 16px; }
+  .card { border: 1px solid hsl(30,10%,15%); border-radius: 4px; overflow: hidden; background: hsl(20,12%,6%); transition: all 0.4s ease; cursor: default; }
+  .card:hover { transform: translateY(-4px); }
+  .card[data-accent="gold"]:hover { border-color: #c8860a66; box-shadow: 0 0 25px #c8860a22, 0 0 60px #c8860a11, inset 0 0 30px #c8860a08; }
+  .card[data-accent="green"]:hover { border-color: #6b8f6b66; box-shadow: 0 0 25px #6b8f6b22, 0 0 60px #6b8f6b11, inset 0 0 30px #6b8f6b08; }
+  .card[data-accent="amber"]:hover { border-color: #b8860b66; box-shadow: 0 0 25px #b8860b22, 0 0 60px #b8860b11, inset 0 0 30px #b8860b08; }
+  .card-header { height: 112px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .card:hover .card-glow { opacity: 1; }
+  .card-glow { position: absolute; inset: 0; opacity: 0; transition: opacity 0.4s ease; }
+  .cap-ring { width: 64px; height: 64px; border-radius: 50%; border: 2px solid; display: flex; align-items: center; justify-content: center; position: relative; transition: box-shadow 0.4s ease; }
+  .card:hover .cap-ring { box-shadow: 0 0 15px currentColor; }
+  .card:hover .pulse { animation: pulse-ring 2s ease-in-out infinite; }
+  .pulse { position: absolute; inset: -8px; border-radius: 50%; border: 1px solid; opacity: 0; }
+  .cap-inner { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.4s ease; }
+  .cap-label { font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; line-height: 1.2; padding: 0 4px; transition: text-shadow 0.4s ease; }
+  .card:hover .cap-label { text-shadow: 0 0 8px currentColor; }
+  .card-body { padding: 16px; position: relative; overflow: hidden; }
+  .card:hover .shimmer { animation: shimmer 2s linear infinite; }
+  .shimmer { position: absolute; top: 0; left: 0; right: 0; height: 1px; background-size: 200% 100%; opacity: 0; transition: opacity 0.4s ease; }
+  .card:hover .shimmer { opacity: 1; }
+  .card-body h4 { font-size: 14px; font-weight: 500; margin-bottom: 8px; transition: text-shadow 0.4s ease; }
+  .card:hover .card-body h4 { text-shadow: 0 0 12px currentColor; }
+  .card-body p { font-size: 12px; color: hsl(40,20%,65%); line-height: 1.6; transition: color 0.4s ease; }
+  .card:hover .card-body p { color: hsl(40,20%,75%); }
+  @keyframes pulse-ring { 0%{transform:scale(1);opacity:0.4} 50%{transform:scale(1.15);opacity:0} 100%{transform:scale(1);opacity:0} }
+  @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+</style>
+</head>
+<body>
+<div class="grid">
+
+  <div class="card" data-accent="gold">
+    <div class="card-header" style="background:#1a1a2e">
+      <div class="card-glow" style="background:radial-gradient(circle at 50% 50%, #c8860a15 0%, transparent 70%)"></div>
+      <div class="cap-ring" style="border-color:#c8860a; color:#c8860a44">
+        <div class="pulse" style="border-color:#c8860a44"></div>
+        <div class="cap-inner" style="background:#c8860a22">
+          <span class="cap-label" style="color:#c8860a">Dark Sailor Rum</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="shimmer" style="background:linear-gradient(90deg,transparent,#c8860a66,transparent);background-size:200% 100%"></div>
+      <h4 style="color:#c8860a">Dark Sailor Rum</h4>
+      <p>A cheap dark rum produced in and for the West African market. The brand name itself evokes the maritime trade networks — the 'dark sailor' who carried goods (and people) across the Atlantic. Rum was the currency that purchased enslaved bodies: European traders exchanged barrels of it for human beings at coastal forts. Its caps appear frequently in Anatsui's sculptures, their deep color forming the shadowed areas of his compositions — the darkness that underwrites the gold.</p>
+    </div>
+  </div>
+
+  <div class="card" data-accent="green">
+    <div class="card-header" style="background:#0d1b0d">
+      <div class="card-glow" style="background:radial-gradient(circle at 50% 50%, #6b8f6b15 0%, transparent 70%)"></div>
+      <div class="cap-ring" style="border-color:#6b8f6b; color:#6b8f6b44">
+        <div class="pulse" style="border-color:#6b8f6b44"></div>
+        <div class="cap-inner" style="background:#6b8f6b22">
+          <span class="cap-label" style="color:#6b8f6b">Seaman's Aromatic Schnapps</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="shimmer" style="background:linear-gradient(90deg,transparent,#6b8f6b66,transparent);background-size:200% 100%"></div>
+      <h4 style="color:#6b8f6b">Seaman's Aromatic Schnapps</h4>
+      <p>Originally a Dutch-produced spirit, Seaman's Schnapps became central to West African ritual life — used in libations, ceremonies, and gift-giving. This was not accidental: European traders deliberately aimed this product at African spiritual practices, weaponizing cultural integration as a market strategy. The 'schnapps ritual' is now inseparable from the colonial trade that introduced it. The gun was disguised as a gift.</p>
+    </div>
+  </div>
+
+  <div class="card" data-accent="amber">
+    <div class="card-header" style="background:#1a0a00">
+      <div class="card-glow" style="background:radial-gradient(circle at 50% 50%, #b8860b15 0%, transparent 70%)"></div>
+      <div class="cap-ring" style="border-color:#b8860b; color:#b8860b44">
+        <div class="pulse" style="border-color:#b8860b44"></div>
+        <div class="cap-inner" style="background:#b8860b22">
+          <span class="cap-label" style="color:#b8860b">Nigerian Guinness</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="shimmer" style="background:linear-gradient(90deg,transparent,#b8860b66,transparent);background-size:200% 100%"></div>
+      <h4 style="color:#b8860b">Nigerian Guinness</h4>
+      <p>Guinness opened its Lagos brewery in 1962, two years after Nigerian independence — timing that was strategic, not coincidental. Today, Nigeria is Guinness's second-largest market worldwide. The colonial barrel never stopped pointing: it simply rebranded. The ubiquity of these caps in Anatsui's material supply is evidence that the extraction economy didn't end — it incorporated.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
